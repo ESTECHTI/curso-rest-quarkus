@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -23,5 +24,9 @@ public class FollowRespository implements PanacheRepository<Follower> {
         Optional<Follower> result = query.firstResultOptional();
 
         return result.isPresent();
+    }
+    public List<Follower> findByUser(Long userId) {
+        PanacheQuery<Follower> query = find("user.id", userId);
+        return query.list();
     }
 }
