@@ -5,7 +5,6 @@ import io.github.ESTECHTI.quarkussocial.rest.dto.ResponseError;
 import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
@@ -24,6 +23,23 @@ class UserResourceTest {
 
     @TestHTTPResource("/users")
     URL apiURL;
+
+    @BeforeEach
+    public void setup() {
+
+        // Criar um usuário inicial para o teste de listagem
+        var createUserRequest = new CreateUserRequest();
+        createUserRequest.setName("Fulano");
+        createUserRequest.setAge(30);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(JsonbBuilder.create().toJson(createUserRequest))
+                .when()
+                .post(apiURL)
+                .then()
+                .statusCode(201);
+    }
 
     @Test
     @DisplayName("should create an user successfully")
@@ -77,12 +93,12 @@ class UserResourceTest {
     @Order(3)
     void listAllUsersTest() {
         given()
-                .contentType(ContentType.JSON)
-                .when()
-                    .get(apiURL)
-                .then()
-                .statusCode(200)
-                .body("size()", Matchers.is(1));
+            .contentType(ContentType.JSON)
+        .when()
+            .get(apiURL)
+        .then()
+            .statusCode(200)
+            .body("size()", Matchers.is(1));
 
     }
 }
